@@ -12,7 +12,7 @@ public class Transaction {
   private final int amount;
   private DbController db = DbController.getInstance();
 
-  Transaction(String to, String from, String amount) {
+  Transaction(String from, String to, String amount) {
     this.toAccountNumber = Integer.valueOf(to);
     this.fromAccountNumber = Integer.valueOf(from);
     this.amount = Integer.valueOf(amount);
@@ -20,7 +20,7 @@ public class Transaction {
     transact();
   }
 
-  Transaction(int to, int from, int amount) {
+  Transaction(int from, int to, int amount) {
     this.toAccountNumber = to;
     this.fromAccountNumber = from;
     this.amount = amount;
@@ -90,7 +90,6 @@ public class Transaction {
       ResultSet rs = fetchAmount.executeQuery();
       rs.next();
       return rs.getInt(1) >= amount;
-
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
