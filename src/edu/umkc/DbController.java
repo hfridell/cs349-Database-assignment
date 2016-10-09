@@ -8,17 +8,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Vector;
 
 
 public class DbController {
 
-  private static DbConnection db  = new DbConnection();
+  private static DbConnection db = new DbConnection();
 
-  @Deprecated
-  public Connection getConnection() {
+  private Connection connection() {
     return db.connection;
   }
 
@@ -33,6 +36,60 @@ public class DbController {
   public Statement createStatement() throws SQLException {
     return db.connection.createStatement();
   }
+
+  public List<Object> query(String[] columnNames, String from) throws SQLException {
+    return new Query().query(columnNames, from);
+  }
+
+  private class Query {
+
+    private List<Object> query(String[] columnNames, String from) throws SQLException {
+      Statement statement = createStatement();
+      StringBuilder queryCommand = new StringBuilder();
+      queryCommand.append("SELECT ").append(String.join(", ", columnNames))
+          .append(" FROM ").append(from);
+
+      ResultSet rs = statement.executeQuery(queryCommand.toString());
+      List<Object> result = new Vector<>();
+      while (rs.next()) {
+        List<Object> row = new Vector<>();
+        for (String col : columnNames) {
+          row.add(rs.getObject(col));
+        }
+        result.add(row);
+      }
+      statement.close();
+      return result;
+    }
+  }
+
+  private void getAccountAmount(int accountId) throws SQLException {
+    PreparedStatement fetchAmount = null;
+    String amountString = "SELECT amount FROM account WHERE account_id = ?";
+
+    try {
+      db.setAutoCommit(false);
+      fetchAmount = db.prepareStatement(amountString);
+      fetchAmount.setInt(1, accountId);
+      db.commit();
+    } catch (SQLException e) {
+      if (connection() != null) {
+        try {
+          System.err.print("Transaction is being rolled back");
+          db.rollback();
+        } catch (SQLException e1) {
+          e1.printStackTrace();
+        }
+      }
+
+    } finally {
+      if (fetchAmount != null) {
+        fetchAmount.close();
+      }
+      db.setAutoCommit(true);
+    }
+  }
+
 
   private static class DbConnection {
     private String password;
@@ -97,7 +154,21 @@ public class DbController {
       connectionInfo = sb.toString();
     }
 
+    private void setAutoCommit(boolean val) throws SQLException {
+      connection.setAutoCommit(val);
+    }
 
+    private void commit() throws SQLException {
+      connection.commit();
+    }
+
+    private void rollback() throws SQLException {
+      connection.rollback();
+    }
+
+    private PreparedStatement prepareStatement(String statement) throws SQLException {
+      return connection.prepareStatement(statement);
+    }
   }
 
 }
