@@ -2,22 +2,19 @@ package edu.umkc;
 
 
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.List;
 
 public class AccountTransactionController {
   AccountTransactionLayout layout;
   DbController dbController;
 
-  Vector<String> columnNames = new Vector<>();
-  columnNames.add("Account ID");
-  columnNames.add("Account Name");
-  columnNames.add("Balance");
+  Object[] columnNames = {"Account_ID", "Account_Name", "Account_Balance"};
 
-  Vector<Vector<Object>> data;
+  Object[][] data = {{}};
 
   AccountTransactionController(AccountTransactionLayout layout) {
     this.layout = layout;
-    dbController = new DbController();
+    dbController = DbController.getInstance();
     updateModel();
   }
 
@@ -28,21 +25,29 @@ public class AccountTransactionController {
         layout.amountField.getText());
 
     updateModel();
+    clear();
   }
 
   private void updateModel() {
     String[] col = {"Account_ID", "Account_Name", "Account_Balance"};
+    List<List<Object>> queryResults;
+
     try {
-      data = dbController.query(col, "account");
+      queryResults = dbController.query(col, "account");
+      int size = queryResults.size();
+      data = new Object[size][];
+      for (int i = 0; i < size; i++) {
+        data[i] = queryResults.get(i).toArray();
+      }
     } catch (SQLException e) {
       e.printStackTrace();
     }
+    layout.updateUi();
   }
 
   public void clear() {
     layout.fromField.setText("");
     layout.toField.setText("");
     layout.amountField.setText("");
-    // restart transaction
   }
 }

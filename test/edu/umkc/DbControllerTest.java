@@ -14,7 +14,7 @@ public class DbControllerTest {
 
   @org.junit.Before
   public void setUp() throws Exception {
-    controller = new DbController();
+    controller = DbController.getInstance();
   }
 
   @org.junit.After

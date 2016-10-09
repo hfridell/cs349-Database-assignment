@@ -12,84 +12,71 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Vector;
 
 
 public class DbController {
+  private static DbController ourInstance = new DbController();
+  private static DbConnection connection = new DbConnection();
 
-  private static DbConnection db = new DbConnection();
+  public static DbController getInstance() {
+    return ourInstance;
+  }
 
-  private Connection connection() {
-    return db.connection;
+  private DbController() {
+  }
+
+  public Connection connection() {
+    return connection.connection;
   }
 
   public void close() {
     try {
-      db.connection.close();
+      connection.connection.close();
     } catch (SQLException e) {
       e.printStackTrace();
     }
   }
 
   public Statement createStatement() throws SQLException {
-    return db.connection.createStatement();
+    return connection.connection.createStatement();
   }
 
-  public List<Object> query(String[] columnNames, String from) throws SQLException {
-    return new Query().query(columnNames, from);
-  }
+  public List<List<Object>> query(String[] columnNames, String from) throws SQLException {
+    Statement statement = createStatement();
+    String queryCommand = "SELECT " + String.join(", ", columnNames) +
+        " FROM " + from;
 
-  private class Query {
-
-    private List<Object> query(String[] columnNames, String from) throws SQLException {
-      Statement statement = createStatement();
-      StringBuilder queryCommand = new StringBuilder();
-      queryCommand.append("SELECT ").append(String.join(", ", columnNames))
-          .append(" FROM ").append(from);
-
-      ResultSet rs = statement.executeQuery(queryCommand.toString());
-      List<Object> result = new Vector<>();
-      while (rs.next()) {
-        List<Object> row = new Vector<>();
-        for (String col : columnNames) {
-          row.add(rs.getObject(col));
-        }
-        result.add(row);
+    ResultSet rs = statement.executeQuery(queryCommand);
+    List<List<Object>> result = new ArrayList<>();
+    while (rs.next()) {
+      List<Object> row = new ArrayList<>();
+      for (String col : columnNames) {
+        row.add(rs.getObject(col));
       }
-      statement.close();
-      return result;
+      result.add(row);
     }
+    statement.close();
+    return result;
   }
 
-  private void getAccountAmount(int accountId) throws SQLException {
-    PreparedStatement fetchAmount = null;
-    String amountString = "SELECT amount FROM account WHERE account_id = ?";
-
-    try {
-      db.setAutoCommit(false);
-      fetchAmount = db.prepareStatement(amountString);
-      fetchAmount.setInt(1, accountId);
-      db.commit();
-    } catch (SQLException e) {
-      if (connection() != null) {
-        try {
-          System.err.print("Transaction is being rolled back");
-          db.rollback();
-        } catch (SQLException e1) {
-          e1.printStackTrace();
-        }
-      }
-
-    } finally {
-      if (fetchAmount != null) {
-        fetchAmount.close();
-      }
-      db.setAutoCommit(true);
-    }
+  public void setAutoCommit(boolean b) throws SQLException {
+    connection.setAutoCommit(b);
   }
 
+  public PreparedStatement prepareStatement(String statement) throws SQLException {
+    return connection.prepareStatement(statement);
+  }
+
+  public void commit() throws SQLException {
+    connection.commit();
+  }
+
+  public void rollback() throws SQLException {
+    connection.rollback();
+  }
 
   private static class DbConnection {
     private String password;
@@ -127,22 +114,22 @@ public class DbController {
     private void manualConfiguration() {
       System.out.println("Configuration file not found.");
       Scanner in = new Scanner(System.in);
-      System.out.println("Enter db hostname: ");
+      System.out.println("Enter connection hostname: ");
       hostname = in.next();
-      System.out.println("Enter db type: ");
+      System.out.println("Enter connection type: ");
       serverType = in.next();
-      System.out.println("Enter db username: ");
+      System.out.println("Enter connection username: ");
       username = in.next();
-      System.out.println("Enter db password: ");
+      System.out.println("Enter connection password: ");
       password = in.next();
     }
 
     private void parseConfigFile(FileReader config) {
       JsonObject dbInfo = new JsonParser().parse(config).getAsJsonObject();
-      username = dbInfo.get("db").getAsJsonObject().get("username").getAsString();
-      password = dbInfo.get("db").getAsJsonObject().get("password").getAsString();
-      hostname = dbInfo.get("db").getAsJsonObject().get("hostname").getAsString();
-      serverType = dbInfo.get("db").getAsJsonObject().get("server_type").getAsString();
+      username = dbInfo.get("connection").getAsJsonObject().get("username").getAsString();
+      password = dbInfo.get("connection").getAsJsonObject().get("password").getAsString();
+      hostname = dbInfo.get("connection").getAsJsonObject().get("hostname").getAsString();
+      serverType = dbInfo.get("connection").getAsJsonObject().get("server_type").getAsString();
     }
 
     private void setConnectionInfo(String hostname, String serverType) {

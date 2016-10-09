@@ -59,7 +59,7 @@ public class AccountTransactionLayout extends JFrame {
 
     constraints.gridx = 1;
     constraints.anchor = GridBagConstraints.NORTHWEST;
-    fromField = new JTextField("3", 8);
+    fromField = new JTextField("", 8);
     // Workaround, because of: http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4247013
     fromField.setMinimumSize(fromField.getPreferredSize());
     contentPane.add(fromField, constraints);
@@ -73,7 +73,7 @@ public class AccountTransactionLayout extends JFrame {
     constraints.gridx = 1;
 //	constraints.gridy = 2;
     constraints.anchor = GridBagConstraints.NORTHWEST;
-    toField = new JTextField("4", 8);
+    toField = new JTextField("", 8);
     toField.setMinimumSize(toField.getPreferredSize());
     contentPane.add(toField, constraints);
 
@@ -86,7 +86,7 @@ public class AccountTransactionLayout extends JFrame {
     constraints.gridx = 1;
 //  constraints.gridy = 2;
     constraints.anchor = GridBagConstraints.NORTHWEST;
-    amountField = new JTextField("100", 8);
+    amountField = new JTextField("", 8);
     amountField.setMinimumSize(amountField.getPreferredSize());
     contentPane.add(amountField, constraints);
 
@@ -109,9 +109,10 @@ public class AccountTransactionLayout extends JFrame {
     contentPane.add(transferButton, constraints);
   }
 
-  @Deprecated
   void updateUi(){
-    table.setModel(new DefaultTableModel(controller.data, controller.columnNames));
+    if (table != null) {
+      table.setModel(new DefaultTableModel(controller.data, controller.columnNames));
+    }
   }
 
   public static void buildUi() {
@@ -120,6 +121,7 @@ public class AccountTransactionLayout extends JFrame {
     frame.setVisible(true);
     frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
   }
+
 
   public static void main(String[] args) {
     JFrame frame = new AccountTransactionLayout();
