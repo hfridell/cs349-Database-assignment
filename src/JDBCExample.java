@@ -10,9 +10,9 @@ public class JDBCExample {
     public JDBCExample() throws SQLException {
         // The ODBC Data Source Name (DSN) is example
         //String url = "jdbc:odbc:example";
-        String url = "jdbc:mysql://kc-sce-appdb01.kc.umkc.edu/enter your SSO user ID";
-        String userID = "enter your SSO user ID";
-        String password = "enter the password I gave you in class";
+        String url = "";
+        String userID = "";
+        String password = "";
 
         try {
             Class.forName("com.mysql.jdbc.Driver");

@@ -3,8 +3,10 @@ package edu.umkc;
 
 public class AccountTransactionController {
   AccountTransactionLayout layout;
+  DbController dbController;
 
-  String[] columnNames = {"Account ID",
+  String[] columnNames = {
+      "Account ID",
       "Account Name",
       "Balance"};
   Object[][] data = {
@@ -13,6 +15,7 @@ public class AccountTransactionController {
 
   AccountTransactionController(AccountTransactionLayout layout) {
     this.layout = layout;
+    dbController = new DbController();
   }
 
   public void transfer() {

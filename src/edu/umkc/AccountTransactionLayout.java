@@ -47,7 +47,7 @@ public class AccountTransactionLayout extends JFrame {
     contentPane.add(scrollPaneForTable, constraints);
 
     constraints.gridx = 0;
-//		constraints.gridy = 1;
+//	constraints.gridy = 1;
     constraints.weighty = 0;
     constraints.gridy = GridBagConstraints.RELATIVE;
     constraints.insets = new Insets(2, 4, 2, 4);
@@ -65,33 +65,33 @@ public class AccountTransactionLayout extends JFrame {
     contentPane.add(fromField, constraints);
 
     constraints.gridx = 0;
-//		constraints.gridy = 2;
+//	constraints.gridy = 2;
     constraints.anchor = GridBagConstraints.NORTHEAST;
     JLabel fromLabel = new JLabel("To:");
     contentPane.add(fromLabel, constraints);
 
     constraints.gridx = 1;
-//		constraints.gridy = 2;
+//	constraints.gridy = 2;
     constraints.anchor = GridBagConstraints.NORTHWEST;
     toField = new JTextField("4", 8);
     toField.setMinimumSize(toField.getPreferredSize());
     contentPane.add(toField, constraints);
 
     constraints.gridx = 0;
-//		constraints.gridy = 2;
+//	constraints.gridy = 2;
     constraints.anchor = GridBagConstraints.NORTHEAST;
     JLabel amountLabel = new JLabel("Amount:");
     contentPane.add(amountLabel, constraints);
 
     constraints.gridx = 1;
-//		constraints.gridy = 2;
+//  constraints.gridy = 2;
     constraints.anchor = GridBagConstraints.NORTHWEST;
     amountField = new JTextField("100", 8);
     amountField.setMinimumSize(amountField.getPreferredSize());
     contentPane.add(amountField, constraints);
 
     constraints.gridx = 0;
-//		constraints.gridy = 2;
+//	constraints.gridy = 2;
     constraints.anchor = GridBagConstraints.NORTHEAST;
     JButton clearButton = new JButton("Clear");
     contentPane.add(clearButton, constraints);
@@ -102,7 +102,7 @@ public class AccountTransactionLayout extends JFrame {
     clearButton.addActionListener(e -> controller.clear());
 
     constraints.gridx = 1;
-//		constraints.gridy = 2;
+//	constraints.gridy = 2;
     constraints.anchor = GridBagConstraints.NORTHWEST;
     JButton transferButton = new JButton("Transfer");
     transferButton.addActionListener(e -> controller.transfer());

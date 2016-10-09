@@ -1,21 +1,21 @@
 package edu.umkc;
 
 public class Transaction {
-  private final int to;
-  private final int from;
+  private final int toAccountNumber;
+  private final int fromAccountNumber;
   private final int amount;
 
   Transaction(String to, String from, String amount) {
-    this.to = Integer.valueOf(to);
-    this.from = Integer.valueOf(from);
+    this.toAccountNumber = Integer.valueOf(to);
+    this.fromAccountNumber = Integer.valueOf(from);
     this.amount = Integer.valueOf(amount);
 
     transact();
   }
 
   Transaction(int to, int from, int amount) {
-    this.to = to;
-    this.from = from;
+    this.toAccountNumber = to;
+    this.fromAccountNumber = from;
     this.amount = amount;
 
     transact();
